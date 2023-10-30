@@ -1,3 +1,5 @@
+"use client";
+
 import { LoginData } from "@/app/interfaces/user";
 import { useState } from "react";
 import RememberMeCheckbox from "./RememberMeCheckbox";

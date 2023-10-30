@@ -11,6 +11,7 @@ const LoginPage: React.FC = () => {
 
   async function handleLogin(data: LoginData) {
     "use server";
+
     let username = String(data.email);
     let password = hashPassword(String(data.password));
     let user = await UserCollection.findOne({ username });

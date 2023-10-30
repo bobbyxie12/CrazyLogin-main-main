@@ -3,7 +3,6 @@ import { useState } from "react";
 const InfoUpdateForm = () => {
   const [formData, setFormData] = useState({
     Name: "",
-
     dob: "",
     email: "",
     phone: "",
@@ -16,7 +15,7 @@ const InfoUpdateForm = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    // Handle form submission, e.g., update user info on server
+    // Handle form submission, update user info on server
 
   };
 

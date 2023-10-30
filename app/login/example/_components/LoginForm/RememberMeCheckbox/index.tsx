@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 interface RememberMeCheckboxProps {
   onRememberChange: (checked: boolean) => void;
 }
 
-const RememberMeCheckbox: React.FC<RememberMeCheckboxProps> = ({ onRememberChange }) => {
+const RememberMeCheckbox: React.FC<RememberMeCheckboxProps> = ({
+  onRememberChange,
+}) => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const handleCheckboxChange = () => {
@@ -23,11 +25,12 @@ const RememberMeCheckbox: React.FC<RememberMeCheckboxProps> = ({ onRememberChang
           onChange={handleCheckboxChange}
         />
         <span className="ml-2 text-gray-700">Remember Me</span>
-        
-      </label>      
-            
-            
-        <span className="   underline underline-offset-4 text-slate-500 "> Forget password?</span>
+      </label>
+
+      <span className="   underline underline-offset-4 text-slate-500 ">
+        {" "}
+        Forget password?
+      </span>
     </div>
   );
 };

@@ -1,25 +1,15 @@
 // "use client"
-import { useState, FormEvent } from "react";
 import { UserCollection } from "@/app/db/db";
 import { hashPassword } from "@/app/utils/helper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import LoginButton from "./page1";
-
-interface LoginData{
-  email: string;
-  password: string;
-}
-
+import { LoginForm } from "./_components/LoginForm";
+import { LoginData } from "@/app/interfaces/user";
 
 const LoginPage: React.FC = () => {
-
   // const handleLogin = async (data: FormData) => {
 
-
   async function handleLogin(data: LoginData) {
-
-    
     "use server";
     let username = String(data.email);
     let password = hashPassword(String(data.password));
@@ -32,21 +22,13 @@ const LoginPage: React.FC = () => {
 
       //submit username and password to the backend
     }
-
-
-
   }
 
   // const handleData = (data:LoginData)=>{
   //   console.log(data)
   // }
 
-
-
-
   //if doesnt match
-
-
 
   return (
     <div className="">
@@ -64,13 +46,8 @@ const LoginPage: React.FC = () => {
 
           {/* login form */}
 
-
-
-            <LoginButton onLogin={handleLogin} />
-
-
-
- 
+          {/* <LoginButton onLogin={handleLogin} /> */}
+          <LoginForm onLogin={handleLogin} />
         </div>
       </div>
     </div>

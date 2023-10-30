@@ -46,9 +46,7 @@ export interface User {
   isActive: boolean;
 }
 
-
 export interface LoginData {
-    email: string;
-    password: string;
-
+  email: string;
+  password: string;
 }

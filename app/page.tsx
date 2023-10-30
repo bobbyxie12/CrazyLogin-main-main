@@ -21,8 +21,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
       </a>
 
 
-      <Link href="/pages">trail</Link>
-
+      {/* <Link href="/pages">trail</Link> */}
+      <Link href="/profile">Profile</Link>
     </div>
   );
 }

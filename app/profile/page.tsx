@@ -4,15 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 
 const Profile = () => {
-  const [formData, setFormData] = useState({
-    password: "",
-  });
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const [avatar, setAvatar] = useState(
     "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
   );
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  //the function was triggered when user submitted the update form
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = event.target.value;
+    setPassword(newPassword);
+
+    // password validation
+    const isValid = validatePassword(newPassword);
+
+    if (isValid) {
+      setPasswordError(null);
+    } else {
+      setPasswordError("at least 8 characters.");
+    }
+  };
+    //password validation
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
 
   //js: use to upload avatar
   const handleAvatarUpload = (e: any) => {
@@ -26,11 +44,10 @@ const Profile = () => {
     }
   };
 
-  //js: use to update the password
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handlePasswordSubmit = () => {
+    return;
   };
+  //js: use to update the password
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat bg-[url('/images/background.jpg')]">
@@ -38,18 +55,21 @@ const Profile = () => {
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
         {/* personal info page */}
         <div className="flex flex-col items-center mb-4">
-          <div className="w-13 h-13 rounded-lg">
+          {/* avatar window  */}
+          <div className="w-40 h-40 rounded-lg mb-3">
+            {/* avatar image  */}
             <img
               src={avatar}
               alt="User Avatar"
-              className="rounded-lg mb-4 bg-cover "
+              className="w-full h-full rounded-lg mb-4 object-cover"
             />
           </div>
 
+          {/* personal information */}
           <h2 className="text-2xl">Bobby</h2>
-          <p>Date of Birth: January 1, 2000</p>
-          <p>Email: 123456@qq.com</p>
-          <p>Phone: 123-456-7890</p>
+          <p className="mb-1">Date of Birth: January 1, 2000</p>
+          <p className="mb-1">Email: 123456@qq.com</p>
+          <p className="mb-1">Phone: 123-456-7890</p>
         </div>
 
         {/* the button is used to update the info */}
@@ -60,6 +80,7 @@ const Profile = () => {
           Change Avatar
         </button>
 
+        {/* the button is used to update the password */}
         <button
           onClick={() => setIsPasswordModalOpen(true)}
           className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
@@ -67,12 +88,12 @@ const Profile = () => {
           Change Password
         </button>
 
+        {/* transfer to profile update page */}
         <Link href="/profile/components">
           <button className="bg-blue-500 text-white p-2 rounded-lg  w-full">
             Change Personal Information
           </button>
         </Link>
-
 
         {/* this is the modal, which is used to update the avatar */}
         {isAvatarModalOpen && (
@@ -96,6 +117,12 @@ const Profile = () => {
                 >
                   Save
                 </button>
+                <button
+                  onClick={() => setIsAvatarModalOpen(false)}
+                  className="text-red-500 mb-2"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
@@ -104,27 +131,39 @@ const Profile = () => {
         {/* this is the modal, which is used to update the password */}
         {isPasswordModalOpen && (
           <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-  
-
-            <form className="space-y-4 ">
-              <div className="flex flex-col">
-                <label className="text-gray-700">password</label>
-                <input
-                  type="text"
-                  name="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="p-2 border rounded-lg"
-                />
-              </div>
-            </form>
-
-            <button
-              onClick={() => setIsPasswordModalOpen(false)}
-              className="bg-sky-500 hover:bg-sky-700 ..."
-            >
-              Save changes
-            </button>
+            {/* window warpper */}
+            <div className="w-60 h-60 bg-slate-200  rounded-lg">
+              <form className="space-y-4 h-60 " onSubmit={handlePasswordSubmit}>
+                <div className="flex flex-col justify-around h-60">
+                  <label className="text-gray-700 text-bold text-lg mt-3 mb-2">
+                    Password Update
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={password}
+                    placeholder="Enter your new password"
+                    onChange={handlePasswordChange}
+                    className="p-2 border rounded-lg mb-4"
+                  />
+                  {passwordError && (
+                    <p className="text-red-500">{passwordError}</p>
+                  )}
+                  <button
+                    className="h-10 mb-5  rounded-lg bg-sky-500 hover:bg-sky-700 ..."
+                    type="submit"
+                  >
+                    Save changes
+                  </button>
+                  <button
+                    onClick={() => setIsAvatarModalOpen(false)}
+                    className="h-10 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mb-2"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>

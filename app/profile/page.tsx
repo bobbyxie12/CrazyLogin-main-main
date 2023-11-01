@@ -89,7 +89,7 @@ const Profile = () => {
         </button>
 
         {/* transfer to profile update page */}
-        <Link href="/profile/components">
+        <Link href="/profile/updateUserProfile">
           <button className="bg-blue-500 text-white p-2 rounded-lg  w-full">
             Change Personal Information
           </button>

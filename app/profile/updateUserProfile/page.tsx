@@ -5,23 +5,24 @@ import { useRouter } from "next/navigation";
 //trigger the function when users enter the input
 const InfoUpdateForm = () => {
   const router = useRouter();
-
   const [isValid, setIsValid] = useState(true);
-
   const [formData, setFormData] = useState({
     Name: "",
     dob: "",
     email: "",
     phone: "",
+    addressline:"",
+    dateBox:"",
   });
-
+  // const [dateBox, setDateBox] = useState('');
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    
   };
 
   //define the regular expression for phone number
-  const telephoneRegex = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
+  const telephoneRegex = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4,5})$/;
   //trigger the function when submit the form
   const handleSubmit = (e: any) => {
     // Handle form submission, update user info on server
@@ -30,9 +31,37 @@ const InfoUpdateForm = () => {
     const isValidTelephone = telephoneRegex.test(formData.phone);
     setIsValid(isValidTelephone);
     e.preventDefault();
+    
+   
+    //convert the birthday to timestamp 
+    const birthdayTimestamp: number = new Date(formData.dateBox).getTime();
+    const timestampString: string = birthdayTimestamp.toString();
+    //save timstamp into dataform
+    setFormData(preState => ({
+      ...preState,
+      dob:timestampString
+    }))
+
     //testing
-    console.log(formData.phone)
-    router.push('/profile')
+
+    console.log(formData.dob);
+
+    //update the password right here
+    // const response = await fetch('/api/updatePassword', {
+    //   method: 'PUT',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email, newPassword })
+    // });
+
+    // const data = await response.json();
+    // console.log(data);
+
+
+    // router.push("/profile");
+
+
+
+
   };
 
   return (
@@ -61,8 +90,8 @@ const InfoUpdateForm = () => {
             <label className="text-gray-700">Date of Birth</label>
             <input
               type="date"
-              name="dob"
-              value={formData.dob}
+              name="dateBox"
+              value={formData.dateBox}
               onChange={handleChange}
               className="p-2 border rounded-lg"
               required
@@ -93,11 +122,27 @@ const InfoUpdateForm = () => {
               required
             />
           </div>
+
           {!isValid && (
             <p className="text-red-500">
               Please enter a valid telephone number.
             </p>
           )}
+
+          {/* addressline input */}
+          <div className="flex flex-col">
+            <label className="text-gray-700">addressline</label>
+            <input
+              type="address"
+              name="addressline"
+              value={formData.addressline}
+              onChange={handleChange}
+              className="p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+
           <button
             type="submit"
             className="bg-blue-500 text-white p-2 rounded-lg"

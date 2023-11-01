@@ -1,27 +1,17 @@
+"use client";
+
 import { SlideButton } from "@/app/components/Button/SlideButton";
 import { TextField } from "@/app/components/Input/TextField";
-import { UserCollection } from "@/app/db/db";
-import { hashPassword } from "@/app/utils/helper";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { useState, useTransition } from "react";
+import { login } from "./_login";
+import { hashPassword } from "@/app/utils/utils";
 
 export const Login = () => {
-  async function login(data: FormData) {
-    "use server";
-    let username = String(data.get("username")),
-      password = hashPassword(String(data.get("password")));
-    let user = await UserCollection.findOne({ username });
-    if (user && user.password === password) {
-      cookies().set("username", username);
-      cookies().set("password", password);
-      cookies().set("region", user.region ?? "SYD");
-      
-      redirect("/next2");
-
-    }    
-
-
-  }
+  const [credential, setCredential] = useState({
+    username: "",
+    password: "",
+  });
+  const [pending, start] = useTransition();
 
   return (
     <div className="relative w-96 h-fit p-4 flex flex-col items-center rounded-md group bg-white/75">
@@ -30,14 +20,45 @@ export const Login = () => {
           Username/Password Login
         </p>
       </div>
-      <form
-        action={login as any}
-        className="flex flex-col gap-2 mb-4 relative z-10"
-      >
-        <TextField title="Username" name="username" />
-        <TextField type="password" title="Password" name="password" />
-        <SlideButton className="my-2 self-end" type="submit" text="SUBMIT" />
-      </form>
+      <div className="flex flex-col gap-2 mb-4 relative z-10">
+        <TextField
+          title="Username"
+          value={credential.username}
+          onChange={(e) => {
+            setCredential({
+              ...credential,
+              username: e.target.value,
+            });
+          }}
+        />
+        <TextField
+          type="password"
+          title="Password"
+          value={credential.password}
+          onChange={(e) => {
+            setCredential({
+              ...credential,
+              password: e.target.value,
+            });
+          }}
+        />
+        <SlideButton
+          loading={pending}
+          className="my-2 self-end"
+          text="SUBMIT"
+          onClick={() => {
+            start(() => {
+              (async () => {
+                let response = await login(
+                  credential.username,
+                  hashPassword(credential.password)
+                );
+                if (typeof response === "string") alert(response);
+              })();
+            });
+          }}
+        />
+      </div>
       <p>Note: </p>
       <p>username: harry</p>
       <p>password: 123456</p>

@@ -1,9 +1,5 @@
-import sha256 from "crypto-js/sha256";
 import { cookies } from "next/headers";
 import { UserCollection } from "../db/db";
-
-export const hashPassword = (rawPassword: string) =>
-  JSON.stringify(sha256(JSON.stringify(sha256(rawPassword).words)).words);
 
 export const getAuthUser = async (access: string) => {
   let username = cookies().get("username")?.value,

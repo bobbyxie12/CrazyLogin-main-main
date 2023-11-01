@@ -1,10 +1,10 @@
 // "use client"
 import { UserCollection } from "@/app/db/db";
-import { hashPassword } from "@/app/utils/helper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "./_components/LoginForm";
 import { LoginData } from "@/app/interfaces/user";
+import { hashPassword } from "@/app/utils/utils";
 
 const LoginPage: React.FC = () => {
   // const handleLogin = async (data: FormData) => {

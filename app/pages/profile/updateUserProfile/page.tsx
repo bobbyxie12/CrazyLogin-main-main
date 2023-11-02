@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 //trigger the function when users enter the input
 const InfoUpdateForm = () => {
   const router = useRouter();
-  const [isValid, setIsValid] = useState(true);
+
   const [formData, setFormData] = useState({
     Name: "",
     dob: "",
     email: "",
     phone: "",
     addressline:"",
+    City: "",
+    State:"",
+    Postcode:"",
     dateBox:"",
   });
   // const [dateBox, setDateBox] = useState('');
@@ -22,14 +25,13 @@ const InfoUpdateForm = () => {
   };
 
   //define the regular expression for phone number
-  const telephoneRegex = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4,5})$/;
+ 
   //trigger the function when submit the form
   const handleSubmit = (e: any) => {
     // Handle form submission, update user info on server
 
     // console.log("running")
-    const isValidTelephone = telephoneRegex.test(formData.phone);
-    setIsValid(isValidTelephone);
+
     e.preventDefault();
     
    
@@ -101,7 +103,7 @@ const InfoUpdateForm = () => {
           <div className="flex flex-col">
             <label className="text-gray-700">Email</label>
             <input
-              type="email"
+              type="text"
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -123,11 +125,7 @@ const InfoUpdateForm = () => {
             />
           </div>
 
-          {!isValid && (
-            <p className="text-red-500">
-              Please enter a valid telephone number.
-            </p>
-          )}
+
 
           {/* addressline input */}
           <div className="flex flex-col">
@@ -136,6 +134,39 @@ const InfoUpdateForm = () => {
               type="address"
               name="addressline"
               value={formData.addressline}
+              onChange={handleChange}
+              className="p-2 border rounded-lg"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="text-gray-700">State</label>
+            <input
+              type="State"
+              name="State"
+              value={formData.State}
+              onChange={handleChange}
+              className="p-2 border rounded-lg"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="text-gray-700">City</label>
+            <input
+              type="City"
+              name="City"
+              value={formData.City}
+              onChange={handleChange}
+              className="p-2 border rounded-lg"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="text-gray-700">Postcode</label>
+            <input
+              type="Postcode"
+              name="Postcode"
+              value={formData.Postcode}
               onChange={handleChange}
               className="p-2 border rounded-lg"
               required

@@ -17,13 +17,13 @@ const LoginPage: React.FC = () => {
     let username = String(data.email);
     let password = hashPassword(String(data.password));
 
-
     
     let user = await UserCollection.findOne({ username });
     if (user && user.password === password) {
       cookies().set("username", username);
       cookies().set("password", password);
       cookies().set("region", user.region ?? "SYD");
+      console.log("success")
       redirect("/profile");
 
       //submit username and password to the backend

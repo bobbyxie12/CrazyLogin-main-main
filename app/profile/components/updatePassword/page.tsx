@@ -1,25 +1,30 @@
-"use client";
-
+"use client"
 import { useState } from "react";
 import Link from "next/link";
+import { updatePasswordData } from "@/app/interfaces/user";
+import { getCookie } from 'cookies-next';
+
+export const UpdatePassword = (
+  {
+    onUpdate,
+  }:{
+    onUpdate:(data:updatePasswordData)=> void
+}) => {
 
 
-const Profile = () => {
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [username, setUsername] = useState("wendy");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);    
   const [avatar, setAvatar] = useState(
-    "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
-  );
-  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-
-  //the function was triggered when user submitted the update form
+      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
+    );
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = event.target.value;
     setPassword(newPassword);
 
     // password validation
+
     const isValid = validatePassword(newPassword);
 
     if (isValid) {
@@ -33,37 +38,52 @@ const Profile = () => {
     return password.length >= 8;
   };
 
-
-
   const handlePasswordSubmit = async (e: any) => {
     e.preventDefault();
-    // const response = await fetch('./utils/updatePassword', {
+    const data:updatePasswordData = {password}
+    onUpdate(data)
+    setIsPasswordModalOpen(false)
+    // console.log(username, password);
+    // await fetch("/api/userProfile", {
     //   method: "PUT",
     //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ username, password }),
-    // });
-    try{
-      const response = await fetch("/api/route.ts", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    //   body: JSON.stringify({ name: username, password: password }),
+    // })
+    //   .then((response) => response.json())
+    //   .then((json) => console.log(json));
 
-    
-    console.log("success");
-    const data = await response.json();
+    // console.log(response)
 
-    alert(data.message || data.error); // Basic alert to show the result
-    }catch{
+    // const data = await response.json();
 
-    }
-    
+    // alert(data.message || data.error); // Basic alert to show the result
   };
   //js: use to update the password
+    const clickButton =()=>{
+
+
+
+      setIsPasswordModalOpen(false)
+    }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat bg-[url('/images/background.jpg')]">
-      {/* personal information window */}
+    <div>
+      {/* the button is used to update the info */}
+      {/* <button
+          onClick={() => setIsAvatarModalOpen(true)}
+          className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
+        >
+          Change Avatar
+        </button> */}
+
+      {/* the button is used to update the password */}
+
+      {/* <button
+          onClick={() => setIsPasswordModalOpen(true)}
+          className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
+        >
+          Change Password
+        </button> */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
         {/* personal info page */}
         <div className="flex flex-col items-center mb-4">
@@ -78,42 +98,32 @@ const Profile = () => {
           </div>
 
           {/* personal information */}
-          <h2 className="text-2xl">Bobby</h2>
-          <p className="mb-1">Date of Birth: January 1, 2000</p>
-          <p className="mb-1">Email: 123456@qq.com</p>
-          <p className="mb-1">Phone: 123-456-7890</p>
-          <p className="mb-1">Addressline1: xxxxxx</p>
-          <span className="mb-1">State: xxxxxx</span>
-          <span className="mb-1">City: xxxxxx</span>
-          <span className="mb-1">Postcode: xxxxxx</span>
+          <div>
+            <h2 className="text-2xl">Bobby</h2>
+            <p className="mb-1">Date of Birth: January 1, 2000</p>
+            <p className="mb-1">Email: 123456@qq.com</p>
+            <p className="mb-1">Phone: 123-456-7890</p>
+            <p className="mb-1">Addressline1: xxxxxx</p>
+            <span className="mb-1">State: xxxxxx</span>
+            <span className="mb-1">City: xxxxxx</span>
+            <span className="mb-1">Postcode: xxxxxx</span>
+          </div>
         </div>
 
-        {/* the button is used to update the info */}
-        {/* <button
-          onClick={() => setIsAvatarModalOpen(true)}
-          className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
-        >
-          Change Avatar
-        </button> */}
-
-        {/* the button is used to update the password */}
         <button
-          onClick={() => setIsPasswordModalOpen(true)}
+          onClick={
+            () => setIsPasswordModalOpen(true)
+          }
           className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
         >
           Change Password
         </button>
-
         {/* transfer to profile update page */}
-        <Link href="/pages/profile/updateUserProfile">
+        <Link href="/profile/updateUserProfile">
           <button className="bg-blue-500 text-white p-2 rounded-lg  w-full">
             Change Personal Information
           </button>
         </Link>
-
-
-
-        {/* this is the modal, which is used to update the password */}
         {isPasswordModalOpen && (
           <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             {/* window warpper */}
@@ -131,17 +141,19 @@ const Profile = () => {
                     onChange={handlePasswordChange}
                     className="p-2 border rounded-lg mb-4"
                   />
+                  {/* this is the modal, which is used to update the password */}
                   {passwordError && (
                     <p className="text-red-500">{passwordError}</p>
                   )}
                   <button
+                    
                     className="h-10 mb-5  rounded-lg bg-sky-500 hover:bg-sky-700 ..."
                     type="submit"
                   >
                     Save changes
                   </button>
                   <button
-                    onClick={() => setIsAvatarModalOpen(false)}
+                    onClick={() => setIsPasswordModalOpen(false)}
                     className="h-10 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mb-2"
                   >
                     Cancel
@@ -155,5 +167,3 @@ const Profile = () => {
     </div>
   );
 };
-
-export default Profile;

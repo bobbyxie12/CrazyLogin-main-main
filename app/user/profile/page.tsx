@@ -30,6 +30,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </li>
             <li>best to have: responsive design for mobile view</li>
           </ol>
+
+          
         </div>
       </div>
     

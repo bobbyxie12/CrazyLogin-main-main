@@ -6,7 +6,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "./_components/LoginForm";
 import { LoginData } from "@/app/interfaces/user";
-import { hashPassword } from "@/app/utils/utils";
+import { hashPassword } from "@/app/utils/utils"
+import { setCookie } from 'cookies-next';;
 
 const LoginPage: React.FC = () => {
   // const handleLogin = async (data: FormData) => {
@@ -23,6 +24,8 @@ const LoginPage: React.FC = () => {
       cookies().set("username", username);
       cookies().set("password", password);
       cookies().set("region", user.region ?? "SYD");
+      //for client side
+      setCookie('username', username);
       console.log("success")
       redirect("/profile");
 

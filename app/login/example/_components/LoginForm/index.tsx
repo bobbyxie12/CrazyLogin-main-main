@@ -3,13 +3,11 @@
 import { LoginData } from "@/app/interfaces/user";
 import { useState } from "react";
 import RememberMeCheckbox from "./RememberMeCheckbox";
+import handleLogin from './loginAPI';
+import { redirect } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
-
-export const LoginForm = ({
-  onLogin,
-}: {
-  onLogin: (data: LoginData) => void;
-}) => {
+export const LoginForm = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   //used to check email state
   const [email, setEmail] = useState<string>("");
@@ -21,13 +19,25 @@ export const LoginForm = ({
     setRememberMe(checked);
   };
 
-  const ClickButton = () => {
+  const  ClickButton = async() => {
     const data: LoginData = { email, password };
-    onLogin(data);
+    const response = await handleLogin(data);
+    console.log(response)
+   if(response.message === "success"){
+    toast("success to update your password");
+
+    // setTimeout(() => {
+    //   redirect("/profile");
+    // }, 1000);
+
+    redirect("/profile");
+
+   }
   };
 
   return (
     <form className="mt-8 space-y-6" action={ClickButton}>
+         <Toaster />
       <input type="hidden" name="remember" value="true" />
       <div className="rounded-md shadow-sm -space-y-px">
         <div>

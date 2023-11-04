@@ -6,32 +6,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "./_components/LoginForm";
 import { LoginData } from "@/app/interfaces/user";
-import { hashPassword } from "@/app/utils/utils"
-import { setCookie } from 'cookies-next';;
+import { hashPassword } from "@/app/utils/utils";
+import { setCookie } from 'cookies-next';
+
 
 const LoginPage: React.FC = () => {
   // const handleLogin = async (data: FormData) => {
 
-  async function handleLogin(data: LoginData) {
-    "use server";
 
-    let username = String(data.email);
-    let password = hashPassword(String(data.password));
-
-    
-    let user = await UserCollection.findOne({ username });
-    if (user && user.password === password) {
-      cookies().set("username", username);
-      cookies().set("password", password);
-      cookies().set("region", user.region ?? "SYD");
-      //for client side
-      setCookie('username', username);
-      console.log("success")
-      redirect("/profile");
-
-      //submit username and password to the backend
-    }
-  }
 
   // const handleData = (data:LoginData)=>{
   //   console.log(data)
@@ -56,7 +38,8 @@ const LoginPage: React.FC = () => {
           {/* login form */}
 
           {/* <LoginButton onLogin={handleLogin} /> */}
-          <LoginForm onLogin={handleLogin} />
+          <LoginForm/>
+          
         </div>
       </div>
     </div>

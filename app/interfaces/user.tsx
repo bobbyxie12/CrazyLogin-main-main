@@ -53,5 +53,10 @@ export interface LoginData {
 
 
 export interface updatePasswordData{
-  password: string;
+  password: string | null;
+
+}
+export interface updateData{
+  username: string;
+
 }

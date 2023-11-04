@@ -1,50 +1,24 @@
-"use client";
-import { useState,useEffect } from "react";
+"use client"
+import { useState } from "react";
 import Link from "next/link";
 import { updatePasswordData } from "@/app/interfaces/user";
-import update from "./updatePasswordApi";
-import updateDataApi from "./updateDataApi";
-import toast, { Toaster } from "react-hot-toast";
 import { getCookie } from 'cookies-next';
 
+export const UpdatePassword = (
+  {
+    onUpdate,
+  }:{
+    onUpdate:(data:updatePasswordData)=> void
+}) => {
 
-export const UpdatePassword = () => {
-  const [formData, setFormData] = useState({
-    Name: "Bobby",
-    dob: "2000-01-01",
-    email: "123465@qq.com",
-    phone: "123456798",
-    addressline:"asd",
-    city: "toronto",
-    state:"Ontario",
-    postcode:"M5A 2B0",
-  });
 
   const [password, setPassword] = useState("");
-  // const [username, setUsername] = useState<string>("");
+  const [username, setUsername] = useState("wendy");
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);    
   const [avatar, setAvatar] = useState(
-    "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
-  );
-
-  useEffect(() => {
-  //   // let username = getCookie('username');
-  //   // username = String(getCookie('username'))
-  //   // console.log(getCookie('username'))
-  //   // console.log(typeof(username))
-  //   // let username = "wendy";
-
-        const response1 = updateDataApi();
-        // const data123 = response1.map(item =>console.log(item))
-        console.log(response1)
-
-    
-
-  },[])
-
-
-
+      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
+    );
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = event.target.value;
     setPassword(newPassword);
@@ -66,22 +40,9 @@ export const UpdatePassword = () => {
 
   const handlePasswordSubmit = async (e: any) => {
     e.preventDefault();
-    // let username = cookies().get("username");
-    if(password.length<8){
-      return toast("at least 8 character");
-    }
-    const data: updatePasswordData = {password};
-    // const datauUername: updatePasswordData = {username};
-    const response = await update(data);
-    console.log(response.message);
-    if (response.message === "success") {
-      toast("success to update your password");
-    }else{
-      toast("fail to update password");
-    }
-    setPassword("")
-    setIsPasswordModalOpen(false);
-    
+    const data:updatePasswordData = {password}
+    onUpdate(data)
+    setIsPasswordModalOpen(false)
     // console.log(username, password);
     // await fetch("/api/userProfile", {
     //   method: "PUT",
@@ -98,20 +59,15 @@ export const UpdatePassword = () => {
     // alert(data.message || data.error); // Basic alert to show the result
   };
   //js: use to update the password
-  const clickButton = (e:any) => {
-    e.preventDefault();
-    setIsPasswordModalOpen(false);
-    setPassword("")
+    const clickButton =()=>{
 
-  };
 
-  const logout = () => {
-    return
-  }
+
+      setIsPasswordModalOpen(false)
+    }
 
   return (
     <div>
-      <Toaster />
       {/* the button is used to update the info */}
       {/* <button
           onClick={() => setIsAvatarModalOpen(true)}
@@ -143,37 +99,31 @@ export const UpdatePassword = () => {
 
           {/* personal information */}
           <div>
-            <h2 className="text-2xl">{formData.Name}</h2>
-            <p className="mb-1">Date of Birth: {formData.dob}</p>
-            <p className="mb-1">Email: {formData.email}</p>
-            <p className="mb-1">Phone: {formData.phone}</p>
-            <p className="mb-1">Addressline1: {formData.addressline}</p>
-            <span className="mb-1">State: {formData.state}</span>
-            <span className="mb-1">City: {formData.city}</span>
-            <span className="mb-1">Postcode: {formData.Name}</span>
+            <h2 className="text-2xl">Bobby</h2>
+            <p className="mb-1">Date of Birth: January 1, 2000</p>
+            <p className="mb-1">Email: 123456@qq.com</p>
+            <p className="mb-1">Phone: 123-456-7890</p>
+            <p className="mb-1">Addressline1: xxxxxx</p>
+            <span className="mb-1">State: xxxxxx</span>
+            <span className="mb-1">City: xxxxxx</span>
+            <span className="mb-1">Postcode: xxxxxx</span>
           </div>
         </div>
 
         <button
-          onClick={() => setIsPasswordModalOpen(true)}
+          onClick={
+            () => setIsPasswordModalOpen(true)
+          }
           className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
         >
           Change Password
         </button>
         {/* transfer to profile update page */}
-        <Link href="/updateInfo">
-          <button className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full">
+        <Link href="/profile/updateUserProfile">
+          <button className="bg-blue-500 text-white p-2 rounded-lg  w-full">
             Change Personal Information
           </button>
         </Link>
-
-        <button
-          onClick={logout}
-          className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
-        >
-          Log Out
-        </button>
-
         {isPasswordModalOpen && (
           <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             {/* window warpper */}
@@ -196,13 +146,14 @@ export const UpdatePassword = () => {
                     <p className="text-red-500">{passwordError}</p>
                   )}
                   <button
+                    
                     className="h-10 mb-5  rounded-lg bg-sky-500 hover:bg-sky-700 ..."
                     type="submit"
                   >
                     Save changes
                   </button>
                   <button
-                    onClick={clickButton}
+                    onClick={() => setIsPasswordModalOpen(false)}
                     className="h-10 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mb-2"
                   >
                     Cancel

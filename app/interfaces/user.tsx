@@ -27,7 +27,7 @@ export interface User {
   preferredName: string | null;
   phone: string | null;
   email: string | null;
-  birthday: number | null;
+  // birthday: number | null;
 
   addressLine1: string | null;
   addressLine2: string | null;
@@ -54,9 +54,24 @@ export interface LoginData {
 
 export interface updatePasswordData{
   password: string | null;
+  username: string;
 
 }
 export interface updateData{
   username: string;
+
+}
+
+export interface updateInfo{
+  Name: string,
+  birthday: string,
+  email: string,
+  phone: string,
+  addressline1:string,
+  addressline2:string,
+  city: string,
+  state:string,
+  postcode:string,
+  dateBox:string,
 
 }

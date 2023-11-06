@@ -1,6 +1,10 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import handleUpdatePassword from "./updateInfoAPI";
+import { updateInfo } from "@/app/interfaces/user";
+import toast, { Toaster } from "react-hot-toast";
+import { redirect } from "next/navigation";
 
 //trigger the function when users enter the input
 const InfoUpdateForm = () => {
@@ -8,30 +12,28 @@ const InfoUpdateForm = () => {
 
   const [formData, setFormData] = useState({
     Name: "",
-    dob: "",
+    birthday:"",
     email: "",
     phone: "",
-    addressline:"",
+    addressline1: "",
+    addressline2: "",
     city: "",
-    state:"",
-    postcode:"",
-    dateBox:"",
+    state: "",
+    postcode: "",
+    dateBox: "",
   });
 
   // useEffect(() => {
   //   console.log("this is useeffct")
   // },[])
 
-  // const [dateBox, setDateBox] = useState('');
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
   };
 
-  
   //define the regular expression for phone number
- 
+
   //trigger the function when submit the form
   const handleSubmit = (e: any) => {
     // Handle form submission, update user info on server
@@ -39,41 +41,24 @@ const InfoUpdateForm = () => {
     // console.log("running")
 
     e.preventDefault();
-    
-   
-    //convert the birthday to timestamp 
+
+    //convert the birthday to timestamp
     const birthdayTimestamp: number = new Date(formData.dateBox).getTime();
     const timestampString: string = birthdayTimestamp.toString();
     //save timstamp into dataform
-    setFormData(preState => ({
+    setFormData((preState) => ({
       ...preState,
-      dob:timestampString
-    }))
+      birthday: timestampString,
+    }));
 
-    //testing
-
-    console.log(formData.dob);
-
-    //update the password right here
-    // const response = await fetch('/api/updatePassword', {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email, newPassword })
-    // });
-
-    // const data = await response.json();
-    // console.log(data);
-
-
-    // router.push("/profile");
-
-
-
-
+    handleUpdatePassword(formData);
+    toast("success to update");
+    router.push("/profile");
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat bg-[url('/images/background.jpg')]">
+      <Toaster />
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
         <label className="text-2xl text-black text-bold">
           Update your information
@@ -131,25 +116,36 @@ const InfoUpdateForm = () => {
             />
           </div>
 
-
-
           {/* addressline input */}
           <div className="flex flex-col">
-            <label className="text-gray-700">addressline</label>
+            <label className="text-gray-700">addressline1</label>
             <input
               type="address"
-              name="addressline"
-              value={formData.addressline}
+              name="addressline1"
+              value={formData.addressline1}
               onChange={handleChange}
               className="p-2 border rounded-lg"
               required
             />
           </div>
+          {/* addressline input */}
+          <div className="flex flex-col">
+            <label className="text-gray-700">addressline2</label>
+            <input
+              type="address"
+              name="addressline2"
+              value={formData.addressline2}
+              onChange={handleChange}
+              className="p-2 border rounded-lg"
+              required
+            />
+          </div>
+
           <div className="flex flex-col">
             <label className="text-gray-700">State</label>
             <input
-              type="State"
-              name="State"
+              type="text"
+              name="state"
               value={formData.state}
               onChange={handleChange}
               className="p-2 border rounded-lg"
@@ -159,8 +155,8 @@ const InfoUpdateForm = () => {
           <div className="flex flex-col">
             <label className="text-gray-700">City</label>
             <input
-              type="City"
-              name="City"
+              type="text"
+              name="city"
               value={formData.city}
               onChange={handleChange}
               className="p-2 border rounded-lg"
@@ -171,14 +167,13 @@ const InfoUpdateForm = () => {
             <label className="text-gray-700">Postcode</label>
             <input
               type="Postcode"
-              name="Postcode"
+              name="postcode"
               value={formData.postcode}
               onChange={handleChange}
               className="p-2 border rounded-lg"
               required
             />
           </div>
-
 
           <button
             type="submit"

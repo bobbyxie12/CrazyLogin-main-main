@@ -1,25 +1,25 @@
 "use client";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { updatePasswordData } from "@/app/interfaces/user";
 import update from "./updatePasswordApi";
 import updateDataApi from "./updateDataApi";
 import toast, { Toaster } from "react-hot-toast";
-import { getCookie } from 'cookies-next';
-
+import { getCookie,deleteCookie   } from "cookies-next";
+import { useRouter } from "next/navigation";
 
 export const UpdatePassword = () => {
-  const [formData, setFormData] = useState({
-    Name: "Bobby",
-    dob: "2000-01-01",
-    email: "123465@qq.com",
-    phone: "123456798",
-    addressline:"asd",
-    city: "toronto",
-    state:"Ontario",
-    postcode:"M5A 2B0",
-  });
-
+  const router = useRouter();
+  
+  const [username, setUsername] = useState("");
+  const [dob, setDob] = useState<number>();
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [addressline1, setAddressline1] = useState("");
+  const [addressline2, setAddressline2] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [postcode, setPostcode] = useState("");
   const [password, setPassword] = useState("");
   // const [username, setUsername] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -29,21 +29,49 @@ export const UpdatePassword = () => {
   );
 
   useEffect(() => {
-  //   // let username = getCookie('username');
-  //   // username = String(getCookie('username'))
-  //   // console.log(getCookie('username'))
-  //   // console.log(typeof(username))
-  //   // let username = "wendy";
+    let username = getCookie("username") ?? "";
+    //   // username = String(getCookie('username'))
+    // console.log(getCookie('username'))
+    // const response1 = updateDataApi(username);
+    // console.log(response1)
+    // const data123 = response1.map(item =>console.log(item))
 
-        const response1 = updateDataApi();
-        // const data123 = response1.map(item =>console.log(item))
-        console.log(response1)
+    updateDataApi(username).then((res) => {
+      if (res.message && typeof res.message !== "string") {
+        //res.message is object
+        console.log(res.message)
+        setAvatar(
+          res.message.icon === null
+            ? "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
+            : res.message.icon
+        );
+        setUsername(
+          res.message.username === null ? "Empty" : res.message.username
+        );
+          // if(typeof(res.message.birthday)!== "string"){
+          //    setDob(res.message.birthday === null ? "Empty" : res.message.birthday)
+          // }
+       
+        setAddressline1(
+          res.message.addressLine1 === null ? "Empty" : res.message.addressLine1
+        );
+        setAddressline2(
+          res.message.addressLine2 === null ? "Empty" : res.message.addressLine2
+        );
+        // setDob(res.message.birthday===null? null:res.message.birthday)
+        setEmail(res.message.email === null ? "Empty" : res.message.email);
+        setPhone(res.message.phone === null ? "Empty" : res.message.phone);
+        setCity(res.message.phone === null ? "Empty" : res.message.phone);
+        setState(res.message.state === null ? "Empty" : res.message.state);
+        setPostcode(
+          res.message.postcode === null ? "Empty" : res.message.postcode
+        );
+      }
+    });
 
-    
-
-  },[])
-
-
+    if (true) {
+    }
+  }, []);
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = event.target.value;
@@ -67,47 +95,37 @@ export const UpdatePassword = () => {
   const handlePasswordSubmit = async (e: any) => {
     e.preventDefault();
     // let username = cookies().get("username");
-    if(password.length<8){
+    if (password.length < 8) {
       return toast("at least 8 character");
     }
-    const data: updatePasswordData = {password};
+    const data: updatePasswordData = { password,username };
     // const datauUername: updatePasswordData = {username};
     const response = await update(data);
     console.log(response.message);
     if (response.message === "success") {
       toast("success to update your password");
-    }else{
+    } else {
       toast("fail to update password");
     }
-    setPassword("")
+    setPassword("");
     setIsPasswordModalOpen(false);
-    
-    // console.log(username, password);
-    // await fetch("/api/userProfile", {
-    //   method: "PUT",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ name: username, password: password }),
-    // })
-    //   .then((response) => response.json())
-    //   .then((json) => console.log(json));
-
-    // console.log(response)
-
-    // const data = await response.json();
-
-    // alert(data.message || data.error); // Basic alert to show the result
   };
   //js: use to update the password
-  const clickButton = (e:any) => {
+  const clickButton = (e: any) => {
     e.preventDefault();
     setIsPasswordModalOpen(false);
-    setPassword("")
-
+    setPassword("");
   };
 
   const logout = () => {
-    return
-  }
+
+    deleteCookie('username')
+    deleteCookie('region');
+    deleteCookie('password');
+    console.log("click")
+    router.push('/login/example')
+
+  };
 
   return (
     <div>
@@ -143,14 +161,15 @@ export const UpdatePassword = () => {
 
           {/* personal information */}
           <div>
-            <h2 className="text-2xl">{formData.Name}</h2>
-            <p className="mb-1">Date of Birth: {formData.dob}</p>
-            <p className="mb-1">Email: {formData.email}</p>
-            <p className="mb-1">Phone: {formData.phone}</p>
-            <p className="mb-1">Addressline1: {formData.addressline}</p>
-            <span className="mb-1">State: {formData.state}</span>
-            <span className="mb-1">City: {formData.city}</span>
-            <span className="mb-1">Postcode: {formData.Name}</span>
+            <h2 className="text-2xl">{username}</h2>
+            <p className="mb-1">Date of Birth: {dob}</p>
+            <p className="mb-1">Email: {email}</p>
+            <p className="mb-1">Phone: {phone}</p>
+            <p className="mb-1">Addressline1: {addressline1}</p>
+            <p className="mb-1">Addressline2: {addressline2}</p>
+            <span className="mb-1">State: {state}</span>
+            <span className="mb-1">City: {city}</span>
+            <span className="mb-1">Postcode: {postcode}</span>
           </div>
         </div>
 

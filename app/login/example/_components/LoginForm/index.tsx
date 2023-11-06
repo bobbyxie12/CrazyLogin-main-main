@@ -1,11 +1,12 @@
 "use client";
 
 import { LoginData } from "@/app/interfaces/user";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import RememberMeCheckbox from "./RememberMeCheckbox";
 import handleLogin from './loginAPI';
 import { redirect } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import { getCookie,hasCookie } from "cookies-next";
 
 export const LoginForm = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -15,6 +16,13 @@ export const LoginForm = () => {
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
 
+
+  useEffect(() => {
+    if( hasCookie("username")){
+      redirect("/profile");
+    }
+
+  },[])
   const handleRememberChange = (checked: boolean) => {
     setRememberMe(checked);
   };
@@ -24,7 +32,7 @@ export const LoginForm = () => {
     const response = await handleLogin(data);
     console.log(response)
    if(response.message === "success"){
-    toast("success to update your password");
+    toast("success to login");
 
     // setTimeout(() => {
     //   redirect("/profile");

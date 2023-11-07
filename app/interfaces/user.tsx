@@ -53,18 +53,21 @@ export interface LoginData {
 
 
 export interface updatePasswordData{
-  password: string | null;
+  newPassword: string | null;
   username: string;
+  oldPassword : string | null
 
 }
 export interface updateData{
   username: string;
+  oldPassword : string | null
 
 }
 
 export interface updateInfo{
-  Name: string,
-  birthday: string,
+  firstName: string,
+  lastName: string,
+  dob: string | unknown,
   email: string,
   phone: string,
   addressline1:string,

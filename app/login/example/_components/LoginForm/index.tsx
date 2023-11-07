@@ -40,6 +40,8 @@ export const LoginForm = () => {
 
     redirect("/profile");
 
+   }else{
+    toast("something is wrong, try again!");
    }
   };
 

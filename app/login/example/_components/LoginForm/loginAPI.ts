@@ -25,7 +25,7 @@ export default async function handleLogin(data: LoginData) {
       return {message: 'success'}
       //submit username and password to the backend
     } else {
-      return { message: 'fail to login' };
+      return { message: 'something is wrong' };
     }
   } catch(error) {
     return { message: error };

@@ -5,6 +5,8 @@ import { hashPassword } from "@/app/utils/utils";
 import { getCookie } from 'cookies-next';
 
 export default async function updateDataApi(username:string) {
+    let password = getCookie("password");
+    // let username = getCookie("username");
         // let username1 = username;
         try{
             let infoData = await UserCollection.findOne(

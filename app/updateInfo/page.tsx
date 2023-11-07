@@ -5,14 +5,17 @@ import handleUpdatePassword from "./updateInfoAPI";
 import { updateInfo } from "@/app/interfaces/user";
 import toast, { Toaster } from "react-hot-toast";
 import { redirect } from "next/navigation";
+import { getCookie, deleteCookie } from "cookies-next";
 
 //trigger the function when users enter the input
 const InfoUpdateForm = () => {
   const router = useRouter();
-
+  let username = getCookie("username") ?? "";
+  let password = getCookie("password") ?? "";
   const [formData, setFormData] = useState({
-    Name: "",
-    birthday:"",
+    firstName: "",
+    lastName: "",
+    dob: "",
     email: "",
     phone: "",
     addressline1: "",
@@ -27,31 +30,32 @@ const InfoUpdateForm = () => {
   //   console.log("this is useeffct")
   // },[])
 
-  const handleChange = (e: any) => {
+  const handleChange = async (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  //define the regular expression for phone number
+  // const timeStamp = () => {
+  //   const birthdayTimestamp: number = new Date(formData.dateBox).getTime();
+  //   const timestampString: string = birthdayTimestamp.toString();
+  //   //save timstamp into dataform
+  //   setFormData({ ...formData, dob: timestampString });
 
+  //   console.log("1");
+  // };
   //trigger the function when submit the form
   const handleSubmit = (e: any) => {
     // Handle form submission, update user info on server
-
-    // console.log("running")
-
     e.preventDefault();
-
-    //convert the birthday to timestamp
+    // console.log("running")
     const birthdayTimestamp: number = new Date(formData.dateBox).getTime();
     const timestampString: string = birthdayTimestamp.toString();
     //save timstamp into dataform
-    setFormData((preState) => ({
-      ...preState,
-      birthday: timestampString,
-    }));
-
-    handleUpdatePassword(formData);
+    const updatedFormData = { ...formData, dob: timestampString };
+    //convert the birthday to timestamp
+    console.log(updatedFormData)
+    handleUpdatePassword(updatedFormData, username, password);
+    console.log("2");
     toast("success to update");
     router.push("/profile");
   };
@@ -67,17 +71,31 @@ const InfoUpdateForm = () => {
         {/* form wrapper */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col">
-            <label className="text-gray-700">Name</label>
+            <label className="text-gray-700">First Name</label>
             {/* name input */}
             <input
               type="text"
-              name="Name"
-              value={formData.Name}
+              name="firstName"
+              value={formData.firstName}
               onChange={handleChange}
               className="p-2 border rounded-lg"
               required
             />
           </div>
+
+          <div className="flex flex-col">
+            <label className="text-gray-700">Last Name</label>
+            {/* name input */}
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              className="p-2 border rounded-lg"
+              required
+            />
+          </div>
+
           {/* Date of Birth input */}
           <div className="flex flex-col">
             <label className="text-gray-700">Date of Birth</label>

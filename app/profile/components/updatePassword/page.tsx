@@ -5,14 +5,16 @@ import { updatePasswordData } from "@/app/interfaces/user";
 import update from "./updatePasswordApi";
 import updateDataApi from "./updateDataApi";
 import toast, { Toaster } from "react-hot-toast";
-import { getCookie,deleteCookie   } from "cookies-next";
+import { getCookie, deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 
 export const UpdatePassword = () => {
   const router = useRouter();
-  
-  const [username, setUsername] = useState("");
-  const [dob, setDob] = useState<number>();
+
+  // const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dob, setDob] = useState<string | number | null | undefined>(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [addressline1, setAddressline1] = useState("");
@@ -20,7 +22,7 @@ export const UpdatePassword = () => {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [postcode, setPostcode] = useState("");
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   // const [username, setUsername] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -28,30 +30,58 @@ export const UpdatePassword = () => {
     "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
   );
 
+  let username = getCookie("username") ?? "";
+  let oldPassword = getCookie("password") ?? "";
+
+
+
+
+  //refresh the page, the info data will update
   useEffect(() => {
     let username = getCookie("username") ?? "";
-    //   // username = String(getCookie('username'))
-    // console.log(getCookie('username'))
-    // const response1 = updateDataApi(username);
-    // console.log(response1)
-    // const data123 = response1.map(item =>console.log(item))
-
     updateDataApi(username).then((res) => {
       if (res.message && typeof res.message !== "string") {
-        //res.message is object
-        console.log(res.message)
+        // console.log(res.message);
+        // set birthday info
+        
+        if ("dob" in res.message) {
+          const dob = res.message.dob;
+          // console.log(typeof(res.message.dob))
+          if (dob && !isNaN(+dob)) {
+            const date = new Date(+dob);
+
+            if (!isNaN(date.getTime())) {
+              // Checking if the date is valid
+              let Newdob = date.toISOString().split("T")[0];
+              setDob(Newdob);
+            } else {
+              // Handle invalid date
+              console.error("Invalid date string:", dob);
+            }
+          } else {
+            // Handle the case where dob is not a string or is missing
+            console.error("dob is missing or not a string:", dob);
+          }
+        }
+
+        if ("preferName" in res.message && typeof(res.message.preferName) == 'string') {
+          setFirstName(
+            res.message.preferName === null ? "XXX" : res.message.preferName
+          );
+        }
+
+        setLastName(
+          res.message.lastName === null ? "XXX" : res.message.lastName
+        );
         setAvatar(
           res.message.icon === null
             ? "https://miro.medium.com/v2/resize:fit:720/format:webp/1*YMJDp-kqus7i-ktWtksNjg.jpeg"
             : res.message.icon
         );
-        setUsername(
-          res.message.username === null ? "Empty" : res.message.username
-        );
-          // if(typeof(res.message.birthday)!== "string"){
-          //    setDob(res.message.birthday === null ? "Empty" : res.message.birthday)
-          // }
-       
+        // setUsername(
+        //   res.message.username === null ? "Empty" : res.message.username
+        // );
+
         setAddressline1(
           res.message.addressLine1 === null ? "Empty" : res.message.addressLine1
         );
@@ -73,14 +103,12 @@ export const UpdatePassword = () => {
     }
   }, []);
 
+  // password validation function
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = event.target.value;
-    setPassword(newPassword);
-
+    setNewPassword(newPassword);
     // password validation
-
     const isValid = validatePassword(newPassword);
-
     if (isValid) {
       setPasswordError(null);
     } else {
@@ -92,60 +120,62 @@ export const UpdatePassword = () => {
     return password.length >= 8;
   };
 
+  // the password update function
   const handlePasswordSubmit = async (e: any) => {
     e.preventDefault();
     // let username = cookies().get("username");
-    if (password.length < 8) {
+    if (newPassword.length < 8) {
       return toast("at least 8 character");
     }
-    const data: updatePasswordData = { password,username };
+    const data: updatePasswordData = { newPassword, oldPassword, username };
     // const datauUername: updatePasswordData = {username};
     const response = await update(data);
     console.log(response.message);
     if (response.message === "success") {
       toast("success to update your password");
+      setNewPassword("");
+      setIsPasswordModalOpen(false);
+      deleteCookie("username");
+      deleteCookie("region");
+      deleteCookie("password");
+      router.push('./login/example')
     } else {
       toast("fail to update password");
+      setNewPassword("");
+      setIsPasswordModalOpen(false);
     }
-    setPassword("");
-    setIsPasswordModalOpen(false);
   };
-  //js: use to update the password
+
+  //modal close function
   const clickButton = (e: any) => {
     e.preventDefault();
     setIsPasswordModalOpen(false);
-    setPassword("");
+    setNewPassword("");
   };
 
+  //logout function
   const logout = () => {
-
-    deleteCookie('username')
-    deleteCookie('region');
-    deleteCookie('password');
-    console.log("click")
-    router.push('/login/example')
-
+    deleteCookie("username");
+    deleteCookie("region");
+    deleteCookie("password");
+    console.log("click");
+    router.push("/login/example");
   };
+
+  //fake data
+  const roles = [
+    {
+      departmentName: "Engineering",
+      departmentRegion: "North America",
+      status: "formal",
+      roleType: "full-time",
+    },
+    // ... more roles
+  ];
 
   return (
     <div>
       <Toaster />
-      {/* the button is used to update the info */}
-      {/* <button
-          onClick={() => setIsAvatarModalOpen(true)}
-          className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
-        >
-          Change Avatar
-        </button> */}
-
-      {/* the button is used to update the password */}
-
-      {/* <button
-          onClick={() => setIsPasswordModalOpen(true)}
-          className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full"
-        >
-          Change Password
-        </button> */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
         {/* personal info page */}
         <div className="flex flex-col items-center mb-4">
@@ -161,15 +191,26 @@ export const UpdatePassword = () => {
 
           {/* personal information */}
           <div>
-            <h2 className="text-2xl">{username}</h2>
+            {roles.map((role, index) => (
+              <div key={index} className="p-4 border rounded shadow-sm">
+                <h3 className="font-bold text-lg">{role.departmentName}</h3>
+                <p>Region: {role.departmentRegion}</p>
+                <p>Status: {role.status}</p>
+                <p>Type: {role.roleType}</p>
+              </div>
+            ))}
+            <h2 className="text-2xl">
+              {firstName} {lastName}
+            </h2>
+
             <p className="mb-1">Date of Birth: {dob}</p>
             <p className="mb-1">Email: {email}</p>
             <p className="mb-1">Phone: {phone}</p>
             <p className="mb-1">Addressline1: {addressline1}</p>
             <p className="mb-1">Addressline2: {addressline2}</p>
-            <span className="mb-1">State: {state}</span>
+            <span className="mb-1 pr-2">State: {state}</span>
             <span className="mb-1">City: {city}</span>
-            <span className="mb-1">Postcode: {postcode}</span>
+            <p className="mb-1">Postcode: {postcode}</p>
           </div>
         </div>
 
@@ -205,7 +246,7 @@ export const UpdatePassword = () => {
                   <input
                     type="password"
                     name="password"
-                    value={password}
+                    value={newPassword}
                     placeholder="Enter your new password"
                     onChange={handlePasswordChange}
                     className="p-2 border rounded-lg mb-4"

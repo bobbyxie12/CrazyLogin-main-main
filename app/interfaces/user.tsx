@@ -65,16 +65,16 @@ export interface updateData{
 }
 
 export interface updateInfo{
-  firstName: string,
-  lastName: string,
-  dob: string | unknown,
-  email: string,
-  phone: string,
-  addressline1:string,
-  addressline2:string,
-  city: string,
-  state:string,
-  postcode:string,
-  dateBox:string,
+  firstName: string | null,
+  lastName: string | null,
+  dob: number | null,
+  email: string | null,
+  phone: string | null,
+  addressline1:string | null,
+  addressline2:string | null,
+  city: string | null,
+  state:string | null,
+  postcode:string | null,
+  dateBox:string | null,
 
 }

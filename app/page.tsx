@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from 'next/link'
-
-export default async function Page({ params }: { params: { slug: string } }) {
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import { AppProps } from 'next/app';
+export default async function Page() {
   return (
+
+
+    // <Provider store={store}>
+    // <Component {...pageProps} />
     <div className="w-screen h-screen flex items-center justify-center gap-2">
       <a href="/login" className="border-2 rounded-md p-4 hover:bg-slate-100">
         Login Page
@@ -26,5 +32,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
 
     </div>
-  );
+
+   );
+  {/*</Provider> */}
+ 
+
+
+
 }

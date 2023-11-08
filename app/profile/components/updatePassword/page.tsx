@@ -7,14 +7,17 @@ import updateDataApi from "./updateDataApi";
 import toast, { Toaster } from "react-hot-toast";
 import { getCookie, deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../../redux/infoData/slice";
 
 export const UpdatePassword = () => {
   const router = useRouter();
+  // const dispatch = useDispatch();
 
   // const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [dob, setDob] = useState<string | number | null | undefined>(null);
+  const [dob, setDob] = useState<string | number | null>(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [addressline1, setAddressline1] = useState("");
@@ -33,38 +36,41 @@ export const UpdatePassword = () => {
   let username = getCookie("username") ?? "";
   let oldPassword = getCookie("password") ?? "";
 
-
-
-
   //refresh the page, the info data will update
   useEffect(() => {
     let username = getCookie("username") ?? "";
     updateDataApi(username).then((res) => {
       if (res.message && typeof res.message !== "string") {
-        // console.log(res.message);
+        console.log(res.message);
         // set birthday info
-        
+
         if ("dob" in res.message) {
           const dob = res.message.dob;
-          // console.log(typeof(res.message.dob))
-          if (dob && !isNaN(+dob)) {
+          // console.log(dob)
+          // console.log(res.message.dob)
+          if (dob) {
             const date = new Date(+dob);
-
-            if (!isNaN(date.getTime())) {
-              // Checking if the date is valid
-              let Newdob = date.toISOString().split("T")[0];
-              setDob(Newdob);
-            } else {
-              // Handle invalid date
-              console.error("Invalid date string:", dob);
-            }
+            console.log(date)
+            console.log(typeof date);
+            // Checking if the date is valid
+            let Newdob = date.toISOString().split("T")[0];
+            setDob(Newdob);
           } else {
-            // Handle the case where dob is not a string or is missing
-            console.error("dob is missing or not a string:", dob);
+            // Handle invalid date
+            console.error("Invalid date string:", dob);
           }
+        } else {
+          setDob(
+            "null"
+          );
+          // Handle the case where dob is not a string or is missing
+          console.error("dob is missing or not a string:", dob);
         }
 
-        if ("preferName" in res.message && typeof(res.message.preferName) == 'string') {
+        if (
+          "preferName" in res.message &&
+          typeof res.message.preferName == "string"
+        ) {
           setFirstName(
             res.message.preferName === null ? "XXX" : res.message.preferName
           );
@@ -83,25 +89,24 @@ export const UpdatePassword = () => {
         // );
 
         setAddressline1(
-          res.message.addressLine1 === null ? "Empty" : res.message.addressLine1
+          res.message.addressLine1 === null ? "null" : res.message.addressLine1
         );
         setAddressline2(
-          res.message.addressLine2 === null ? "Empty" : res.message.addressLine2
+          res.message.addressLine2 === null ? "null" : res.message.addressLine2
         );
         // setDob(res.message.birthday===null? null:res.message.birthday)
-        setEmail(res.message.email === null ? "Empty" : res.message.email);
-        setPhone(res.message.phone === null ? "Empty" : res.message.phone);
-        setCity(res.message.phone === null ? "Empty" : res.message.phone);
-        setState(res.message.state === null ? "Empty" : res.message.state);
+        setEmail(res.message.email === null ? "null" : res.message.email);
+        setPhone(res.message.phone === null ? "null" : res.message.phone);
+        setCity(res.message.phone === null ? "null" : res.message.phone);
+        setState(res.message.state === null ? "null" : res.message.state);
         setPostcode(
-          res.message.postcode === null ? "Empty" : res.message.postcode
+          res.message.postcode === null ? "null" : res.message.postcode
         );
       }
     });
-
-    if (true) {
-    }
   }, []);
+
+  useEffect(() => {}, []);
 
   // password validation function
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +143,7 @@ export const UpdatePassword = () => {
       deleteCookie("username");
       deleteCookie("region");
       deleteCookie("password");
-      router.push('./login/example')
+      router.push("./login/example");
     } else {
       toast("fail to update password");
       setNewPassword("");
@@ -221,7 +226,23 @@ export const UpdatePassword = () => {
           Change Password
         </button>
         {/* transfer to profile update page */}
-        <Link href="/updateInfo">
+        <Link
+          href={{
+            pathname: "/updateInfo",
+            query: {
+              firstName,
+              lastName,
+              dob,
+              email,
+              phone,
+              addressline1,
+              addressline2,
+              city,
+              state,
+              postcode,
+            },
+          }}
+        >
           <button className="bg-blue-500 text-white p-2 rounded-lg mb-2 w-full">
             Change Personal Information
           </button>

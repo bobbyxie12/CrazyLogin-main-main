@@ -9,6 +9,9 @@ import { redirect } from "next/navigation";
 import { getCookie, deleteCookie } from "cookies-next";
 import updateDataApi from "../profile/components/updatePassword/updateDataApi";
 import { useSearchParams } from 'next/navigation'
+import { throttle } from 'lodash';
+
+// import debounce from 'lodash/debounce';
 
 //trigger the function when users enter the input
 const InfoUpdateForm = () => {
@@ -78,6 +81,7 @@ const InfoUpdateForm = () => {
   // };
   //trigger the function when submit the form
   const handleSubmit = (e: any) => {
+    console.log("throttle run");
     // Handle form submission, update user info on server
     e.preventDefault();
     // console.log("running")
@@ -86,12 +90,20 @@ const InfoUpdateForm = () => {
     //save timstamp into dataform
     const updatedFormData = { ...formData, dob: birthdayTimestamp };
     //convert the birthday to timestamp
-    console.log(updatedFormData);
     handleUpdatePassword(updatedFormData, username, password);
-    console.log("2");
+
     toast("success to update");
     router.push("/profile");
   };
+//debounce function 
+// const debouncedSubmit = debounce(() => {
+//   console.log('asdasdaaa')
+// }, 500); // 500ms delay
+const debouncedSubmit = throttle(handleSubmit
+,800); // 500ms delay
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat bg-[url('/images/background.jpg')]">
@@ -102,7 +114,7 @@ const InfoUpdateForm = () => {
         </label>
 
         {/* form wrapper */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={debouncedSubmit} className="space-y-4">
           <div className="flex flex-col">
             <label className="text-gray-700">First Name</label>
             {/* name input */}

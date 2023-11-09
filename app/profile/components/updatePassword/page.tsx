@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback } from "react";
 import Link from "next/link";
 import { updatePasswordData } from "@/app/interfaces/user";
 import update from "./updatePasswordApi";
@@ -9,12 +9,14 @@ import { getCookie, deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../../redux/infoData/slice";
+import { throttle } from 'lodash';
 
 export const UpdatePassword = () => {
   const router = useRouter();
   // const dispatch = useDispatch();
 
   // const [username, setUsername] = useState("");
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [dob, setDob] = useState<string | number | null>(null);
@@ -24,8 +26,16 @@ export const UpdatePassword = () => {
   const [addressline2, setAddressline2] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
-  const [postcode, setPostcode] = useState("");
+  const [postcode, setPostcode] = useState("null");
   const [newPassword, setNewPassword] = useState("");
+  const [roleData,setRoleData] = useState([
+    {
+      roleType:'null' ,
+      status:'null',
+      department:'null',
+      position:'null',
+    }
+  ])
   // const [username, setUsername] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -37,13 +47,40 @@ export const UpdatePassword = () => {
   let oldPassword = getCookie("password") ?? "";
 
   //refresh the page, the info data will update
+    useEffect(() => {
+      
+    },[])
+
+
   useEffect(() => {
     let username = getCookie("username") ?? "";
     updateDataApi(username).then((res) => {
       if (res.message && typeof res.message !== "string") {
-        console.log(res.message);
-        // set birthday info
+        console.log(res.message.roles);
+        //get the roles 
+        
 
+        if(res.message.roles && typeof res.message.roles !== "string"){
+          const roles = res.message.roles
+   
+            roles.map(obj => {
+              
+              setRoleData(() => 
+                [
+                  {
+                    roleType:obj.roleType,
+                    status:obj.status,
+                    department:obj.department,
+                    position:obj.position,
+                  }
+                ]
+              )
+            })    
+          // console.log(roleData.length , '123123123')
+        }
+
+
+        // set birthday info
         if ("dob" in res.message) {
           const dob = res.message.dob;
           // console.log(dob)
@@ -99,14 +136,12 @@ export const UpdatePassword = () => {
         setPhone(res.message.phone === null ? "null" : res.message.phone);
         setCity(res.message.phone === null ? "null" : res.message.phone);
         setState(res.message.state === null ? "null" : res.message.state);
-        setPostcode(
-          res.message.postcode === null ? "null" : res.message.postcode
-        );
+        setPostcode(res.message.postcode === null ? "null" : res.message.postcode);
+
       }
     });
   }, []);
 
-  useEffect(() => {}, []);
 
   // password validation function
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,6 +162,7 @@ export const UpdatePassword = () => {
 
   // the password update function
   const handlePasswordSubmit = async (e: any) => {
+    console.log("debounce function run");
     e.preventDefault();
     // let username = cookies().get("username");
     if (newPassword.length < 8) {
@@ -135,7 +171,7 @@ export const UpdatePassword = () => {
     const data: updatePasswordData = { newPassword, oldPassword, username };
     // const datauUername: updatePasswordData = {username};
     const response = await update(data);
-    console.log(response.message);
+
     if (response.message === "success") {
       toast("success to update your password");
       setNewPassword("");
@@ -166,18 +202,8 @@ export const UpdatePassword = () => {
     console.log("click");
     router.push("/login/example");
   };
-
-  //fake data
-  const roles = [
-    {
-      departmentName: "Engineering",
-      departmentRegion: "North America",
-      status: "formal",
-      roleType: "full-time",
-    },
-    // ... more roles
-  ];
-
+//debounce function 
+const debouncedSubmit = throttle(handlePasswordSubmit, 500);//call the function every 0.5 sec
   return (
     <div>
       <Toaster />
@@ -196,10 +222,10 @@ export const UpdatePassword = () => {
 
           {/* personal information */}
           <div>
-            {roles.map((role, index) => (
+            {roleData.map((role, index) => (
               <div key={index} className="p-4 border rounded shadow-sm">
-                <h3 className="font-bold text-lg">{role.departmentName}</h3>
-                <p>Region: {role.departmentRegion}</p>
+                <h3 className="font-bold text-lg">{role.position}</h3>
+                <p>Department: {role.department}</p>
                 <p>Status: {role.status}</p>
                 <p>Type: {role.roleType}</p>
               </div>
@@ -259,7 +285,7 @@ export const UpdatePassword = () => {
           <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             {/* window warpper */}
             <div className="w-60 h-60 bg-slate-200  rounded-lg">
-              <form className="space-y-4 h-60 " onSubmit={handlePasswordSubmit}>
+              <form className="space-y-4 h-60 " onSubmit={debouncedSubmit}>
                 <div className="flex flex-col justify-around h-60">
                   <label className="text-gray-700 text-bold text-lg mt-3 mb-2">
                     Password Update
